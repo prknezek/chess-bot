@@ -161,7 +161,16 @@ class GameState() :
     Get all the king moves for the king located at row, col and add these moves to the list of valid moves
     '''
     def get_king_moves(self, r, c, moves) :
-        pass
+        same_color = "w" if self.white_to_move else "b"
+        directions = ((-1, -1), (-1, 1), (1, -1), (1, 1), (-1, 0), (0, -1), (1, 0), (0, 1))
+        for d in directions :
+            end_row = d[0] + r
+            end_col = d[1] + c
+            if 0 <= end_row < 8 and 0 <= end_col < 8 :
+                end_piece = self.board[end_row][end_col]
+                
+                if end_piece != same_color :
+                    moves.append(Move((r, c), (end_row, end_col), self.board))
 
 
 
