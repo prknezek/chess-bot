@@ -51,7 +51,7 @@ class GameState() :
     All moves without considering checks
     '''
     def get_all_possible_moves(self) :
-        moves = []
+        moves = [Move((6,4), (4, 4), self.board)]
         for r in range(len(self.board)) :
             for c in range(len(self.board[r])) :
                 square = self.board[r][c]
@@ -97,9 +97,21 @@ class Move() :
         self.end_col = end_sq[1]
 
         self.piece_moved = board[self.start_row][self.start_col]
-        # piece_captured can be "--" to represent nothing was captured
-        self.piece_captured = board[self.end_row][self.end_col]
+        self.piece_captured = board[self.end_row][self.end_col] # piece_captured can be "--" to represent nothing was captured
+
+        self.move_id = self.start_row * 1000 + self.start_col * 100 + self.end_row * 10 + self.end_col
     
+    '''
+    Overwriting the equals method
+    '''
+    def __eq__(self, __value) :
+        if isinstance(__value, Move) :
+            return self.move_id == __value.move_id
+        return False
+
+    '''
+    Returns a move made in chess notation (for debugging purposes)
+    '''
     def get_chess_notation(self) :
         capture = ""
         if self.piece_captured != "--" :
@@ -117,5 +129,8 @@ class Move() :
 
             return piece + self.get_rank_file(self.end_row, self.end_col)
     
+    '''
+    Helper method for get_chess_notation()
+    '''
     def get_rank_file(self, r, c) :
         return self.cols_to_files[c] + self.rows_to_ranks[r]
