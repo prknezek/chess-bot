@@ -127,7 +127,7 @@ class GameState() :
     def get_rook_moves(self, r, c, moves) :
         directions = ((-1, 0), (0, -1), (1, 0), (0, 1))
         self.get_directional_piece_moves(r, c, moves, directions)
-        
+
     '''
     Get all the bishop moves for the bishop located at row, col and add these moves to the list of valid moves
     '''
@@ -146,7 +146,7 @@ class GameState() :
     Get all the knight moves for the knight located at row, col and add these moves to the list of valid moves
     '''
     def get_knight_moves(self, r, c, moves) :
-        opposite_color = "b" if self.white_to_move else "w"
+        same_color = "w" if self.white_to_move else "b"
         directions = ((-1, 2), (-1, -2), (1, 2), (1, -2), (2, -1), (2, 1), (-2, -1), (-2, 1))
         for d in directions :
             end_row = d[0] + r
@@ -154,11 +154,8 @@ class GameState() :
             if 0 <= end_row < 8 and 0 <= end_col < 8 :
                 end_piece = self.board[end_row][end_col]
                 
-                if end_piece == "--" :
+                if end_piece != same_color :
                     moves.append(Move((r, c), (end_row, end_col), self.board))
-                elif end_piece[0] == opposite_color :
-                    moves.append(Move((r, c), (end_row, end_col), self.board))
-
 
     '''
     Get all the king moves for the king located at row, col and add these moves to the list of valid moves
