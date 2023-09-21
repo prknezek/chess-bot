@@ -60,6 +60,8 @@ def main() :
     gs = ChessEngine.GameState()
     load_images() # only do this once before the while loop
     running = True
+    selected_sq = () # tuple : (row, col)
+    player_clicks = [] # keep track of player clicks (two tuples : [(6, 4), (4, 4)])
 
     while running :
         for e in py.event.get() :
@@ -69,6 +71,20 @@ def main() :
                 location = py.mouse.get_pos() # (x,y) location of mouse
                 col = location[0] // SQ_SIZE
                 row = location[1] // SQ_SIZE
+                if selected_sq == (row, col) : # user clicked the same sq twice (undo)
+                    selected_sq = () # unselect the square
+                    player_clicks = [] # clear the clicks
+                else :
+                    selected_sq = (row, col)
+                    player_clicks.append(selected_sq)
+                if len(player_clicks) == 2 :
+                    move = ChessEngine.Move(player_clicks[0], player_clicks[1], gs.board)
+                    print(move.get_chess_notation())
+                    gs.make_move(move)
+                    
+                    selected_sq = ()
+                    player_clicks = []
+
 
         draw_game_state(screen, gs)
         clock.tick(MAX_FPS)
