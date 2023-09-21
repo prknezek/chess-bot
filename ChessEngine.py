@@ -99,12 +99,13 @@ class GameState() :
             if c + 1 <= 7 :
                 if self.board[r + 1][c + 1][0] == "w" :
                     moves.append(Move((r, c), (r + 1, c + 1), self.board))
+    
     '''
-    Get all the rook moves for the rook located at row, col and add these moves to the list of valid moves
+    Get the moves for a directional piece (R, B, Q)
     '''
-    def get_rook_moves(self, r, c, moves) :
+    def get_directional_piece_moves(self, r, c, moves, directions) :
         opposite_color = "b" if self.white_to_move else "w"
-        directions = ((-1, 0), (0, -1), (1, 0), (0, 1))
+
         for d in directions :
             for i in range(1, 8) :
                 end_row = r + d[0] * i
@@ -120,6 +121,26 @@ class GameState() :
                         break
                 else :
                     break
+    '''
+    Get all the rook moves for the rook located at row, col and add these moves to the list of valid moves
+    '''
+    def get_rook_moves(self, r, c, moves) :
+        directions = ((-1, 0), (0, -1), (1, 0), (0, 1))
+        self.get_directional_piece_moves(r, c, moves, directions)
+        
+    '''
+    Get all the bishop moves for the bishop located at row, col and add these moves to the list of valid moves
+    '''
+    def get_bishop_moves(self, r, c, moves) :
+        directions = ((-1, -1), (-1, 1), (1, -1), (1, 1))
+        self.get_directional_piece_moves(r, c, moves, directions)
+
+    '''
+    Get all the queen moves for the queen located at row, col and add these moves to the list of valid moves
+    '''
+    def get_queen_moves(self, r, c, moves) :
+        directions = ((-1, -1), (-1, 1), (1, -1), (1, 1), (-1, 0), (0, -1), (1, 0), (0, 1))
+        self.get_directional_piece_moves(r, c, moves, directions)
 
     '''
     Get all the knight moves for the knight located at row, col and add these moves to the list of valid moves
@@ -138,33 +159,6 @@ class GameState() :
                 elif end_piece[0] == opposite_color :
                     moves.append(Move((r, c), (end_row, end_col), self.board))
 
-    '''
-    Get all the bishop moves for the bishop located at row, col and add these moves to the list of valid moves
-    '''
-    def get_bishop_moves(self, r, c, moves) :
-        opposite_color = "b" if self.white_to_move else "w"
-        directions = ((-1, -1), (-1, 1), (1, -1), (1, 1))
-        for d in directions :
-            for i in range(1, 8) :
-                end_row = r + d[0] * i
-                end_col = c + d[1] * i
-                if 0 <= end_row < 8 and 0 <= end_col < 8 :
-                    end_piece = self.board[end_row][end_col]
-                    if end_piece == "--" :
-                        moves.append(Move((r, c), (end_row, end_col), self.board))
-                    elif end_piece[0] == opposite_color :
-                        moves.append(Move((r, c), (end_row, end_col), self.board))
-                        break
-                    else :
-                        break
-                else :
-                    break
-
-    '''
-    Get all the queen moves for the queen located at row, col and add these moves to the list of valid moves
-    '''
-    def get_queen_moves(self, r, c, moves) :
-        pass
 
     '''
     Get all the king moves for the king located at row, col and add these moves to the list of valid moves
