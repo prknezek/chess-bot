@@ -22,12 +22,21 @@ class GameState() :
 
         self.white_to_move = True
         self.move_log = []
-    
+    '''
+    Takes a move as a parameter and executes it (will not work for castling, en passant, and promotion)
+    '''
     def make_move(self, move) :
         self.board[move.start_row][move.start_col] = "--"
         self.board[move.end_row][move.end_col] = move.piece_moved
         self.move_log.append(move)
         self.white_to_move = not self.white_to_move
+
+    def undo_move(self) :
+        if self.move_log :
+            move = self.move_log.pop()
+            self.board[move.start_row][move.start_col] = move.piece_moved
+            self.board[move.end_row][move.end_col] = move.piece_captured
+            self.white_to_move = not self.white_to_move
 
 class Move() :
 
@@ -45,6 +54,7 @@ class Move() :
         self.end_col = end_sq[1]
 
         self.piece_moved = board[self.start_row][self.start_col]
+        # piece_captured can be "--" to represent nothing was captured
         self.piece_captured = board[self.end_row][self.end_col]
     
     def get_chess_notation(self) :

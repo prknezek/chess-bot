@@ -67,6 +67,7 @@ def main() :
         for e in py.event.get() :
             if e.type == py.QUIT :
                 running = False
+            # mouse handling
             elif e.type == py.MOUSEBUTTONDOWN :
                 location = py.mouse.get_pos() # (x,y) location of mouse
                 col = location[0] // SQ_SIZE
@@ -81,9 +82,13 @@ def main() :
                     move = ChessEngine.Move(player_clicks[0], player_clicks[1], gs.board)
                     print(move.get_chess_notation())
                     gs.make_move(move)
-                    
+
                     selected_sq = ()
                     player_clicks = []
+            # key handling
+            elif e.type == py.KEYDOWN :
+                if e.key == py.K_z : # undo move when z pressed
+                    gs.undo_move()
 
 
         draw_game_state(screen, gs)
