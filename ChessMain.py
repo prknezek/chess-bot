@@ -31,7 +31,7 @@ def draw_game_state(screen, gs) :
 Draw the squares on the board. The top left square is always light
 '''
 def draw_board(screen) :
-    colors = [py.Color("light gray"), py.Color("dark green")]
+    colors = [py.Color(238,238,210), py.Color(118,150,86)]
     for rank in range(DIMENSION) :
         for file in range(DIMENSION) :
             color = colors[(rank + file) % 2]
