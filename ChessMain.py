@@ -84,14 +84,15 @@ def main() :
                     player_clicks.append(selected_sq)
                 if len(player_clicks) == 2 :
                     move = ChessEngine.Move(player_clicks[0], player_clicks[1], gs.board)
-                    print(move.get_chess_notation())
 
                     if move in valid_moves :
+                        print(move.get_chess_notation())
                         gs.make_move(move)
                         move_made = True
-
-                    selected_sq = ()
-                    player_clicks = []
+                        selected_sq = ()
+                        player_clicks = []
+                    else : # instead of resetting clicks we change pieces
+                        player_clicks = [selected_sq]
             # key handling
             elif e.type == py.KEYDOWN :
                 if e.key == py.K_z : # undo move when z pressed

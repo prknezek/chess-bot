@@ -14,7 +14,7 @@ class GameState() :
             ['bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
-            ['--', 'bp', '--', 'wR', '--', '--', 'wp', '--'],
+            ['--', '--', '--', '--', '--', '--', '--', '--'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
             ['wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp'],
             ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR'],
@@ -163,9 +163,9 @@ class GameState() :
     def get_king_moves(self, r, c, moves) :
         same_color = "w" if self.white_to_move else "b"
         directions = ((-1, -1), (-1, 1), (1, -1), (1, 1), (-1, 0), (0, -1), (1, 0), (0, 1))
-        for d in directions :
-            end_row = d[0] + r
-            end_col = d[1] + c
+        for i in range(8) :
+            end_row = directions[i][0] + r
+            end_col = directions[i][1] + c
             if 0 <= end_row < 8 and 0 <= end_col < 8 :
                 end_piece = self.board[end_row][end_col]
                 
