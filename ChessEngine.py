@@ -31,12 +31,55 @@ class GameState() :
         self.move_log.append(move)
         self.white_to_move = not self.white_to_move
 
+    '''
+    Undo the last move made
+    '''
     def undo_move(self) :
         if self.move_log :
             move = self.move_log.pop()
             self.board[move.start_row][move.start_col] = move.piece_moved
             self.board[move.end_row][move.end_col] = move.piece_captured
             self.white_to_move = not self.white_to_move
+    
+    '''
+    All moves considering checks
+    '''
+    def get_valid_moves(self) :
+        return self.get_all_possible_moves() # not worrying about checks yet
+
+    '''
+    All moves without considering checks
+    '''
+    def get_all_possible_moves(self) :
+        moves = []
+        for r in range(len(self.board)) :
+            for c in range(len(self.board[r])) :
+                square = self.board[r][c]
+                turn = square[0] # get color of piece
+
+                # then we should look at this piece
+                if (turn == 'w' and self.white_to_move) or (turn == 'b' and not self.white_to_move): 
+                    piece = square[1]
+                    if piece == "p" :
+                        self.get_pawn_moves(r, c, moves)
+                    elif piece == "R" :
+                        self.get_rook_moves(r, c, moves)
+        
+        return moves
+
+    '''
+    Get all the pawn moves for the pawn located at row, col and add these moves to the list of valid moves
+    '''
+    def get_pawn_moves(self, r, c, moves) :
+        pass
+
+    '''
+    Get all the rook moves for the rook located at row, col and add these moves to the list of valid moves
+    '''
+    def get_rook_moves(self, r, c, moves) :
+        pass
+
+
 
 class Move() :
 

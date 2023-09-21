@@ -58,10 +58,14 @@ def main() :
     clock = py.time.Clock()
     screen.fill(py.Color('white'))
     gs = ChessEngine.GameState()
+    valid_moves = gs.get_valid_moves()
+    move_made = False # flag variable for when a move is made
+
     load_images() # only do this once before the while loop
     running = True
     selected_sq = () # tuple : (row, col)
     player_clicks = [] # keep track of player clicks (two tuples : [(6, 4), (4, 4)])
+
 
     while running :
         for e in py.event.get() :
@@ -81,7 +85,10 @@ def main() :
                 if len(player_clicks) == 2 :
                     move = ChessEngine.Move(player_clicks[0], player_clicks[1], gs.board)
                     print(move.get_chess_notation())
-                    gs.make_move(move)
+
+                    if move in valid_moves :
+                        gs.make_move(move)
+                        move_made = True
 
                     selected_sq = ()
                     player_clicks = []
@@ -89,7 +96,11 @@ def main() :
             elif e.type == py.KEYDOWN :
                 if e.key == py.K_z : # undo move when z pressed
                     gs.undo_move()
+                    move_made = True
 
+        if move_made :
+            valid_moves = gs.get_valid_moves()
+            move_made = False
 
         draw_game_state(screen, gs)
         clock.tick(MAX_FPS)
