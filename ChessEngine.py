@@ -125,13 +125,40 @@ class GameState() :
     Get all the knight moves for the knight located at row, col and add these moves to the list of valid moves
     '''
     def get_knight_moves(self, r, c, moves) :
-        pass
+        opposite_color = "b" if self.white_to_move else "w"
+        directions = ((-1, 2), (-1, -2), (1, 2), (1, -2), (2, -1), (2, 1), (-2, -1), (-2, 1))
+        for d in directions :
+            end_row = d[0] + r
+            end_col = d[1] + c
+            if 0 <= end_row < 8 and 0 <= end_col < 8 :
+                end_piece = self.board[end_row][end_col]
+                
+                if end_piece == "--" :
+                    moves.append(Move((r, c), (end_row, end_col), self.board))
+                elif end_piece[0] == opposite_color :
+                    moves.append(Move((r, c), (end_row, end_col), self.board))
 
     '''
     Get all the bishop moves for the bishop located at row, col and add these moves to the list of valid moves
     '''
     def get_bishop_moves(self, r, c, moves) :
-        pass
+        opposite_color = "b" if self.white_to_move else "w"
+        directions = ((-1, -1), (-1, 1), (1, -1), (1, 1))
+        for d in directions :
+            for i in range(1, 8) :
+                end_row = r + d[0] * i
+                end_col = c + d[1] * i
+                if 0 <= end_row < 8 and 0 <= end_col < 8 :
+                    end_piece = self.board[end_row][end_col]
+                    if end_piece == "--" :
+                        moves.append(Move((r, c), (end_row, end_col), self.board))
+                    elif end_piece[0] == opposite_color :
+                        moves.append(Move((r, c), (end_row, end_col), self.board))
+                        break
+                    else :
+                        break
+                else :
+                    break
 
     '''
     Get all the queen moves for the queen located at row, col and add these moves to the list of valid moves
