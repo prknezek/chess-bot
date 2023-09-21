@@ -14,12 +14,14 @@ class GameState() :
             ['bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
-            ['--', '--', '--', '--', '--', '--', '--', '--'],
+            ['--', 'bp', '--', 'wR', '--', '--', 'wp', '--'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
             ['wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp'],
             ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR'],
         ]
 
+        self.move_functions = {'p' : self.get_pawn_moves, 'R' : self.get_rook_moves, 'N' : self.get_knight_moves,
+                               'B' : self.get_bishop_moves, 'Q' : self.get_queen_moves, 'K' : self.get_king_moves}
         self.white_to_move = True
         self.move_log = []
     '''
@@ -51,7 +53,7 @@ class GameState() :
     All moves without considering checks
     '''
     def get_all_possible_moves(self) :
-        moves = [Move((6,4), (4, 4), self.board)]
+        moves = []
         for r in range(len(self.board)) :
             for c in range(len(self.board[r])) :
                 square = self.board[r][c]
@@ -60,10 +62,8 @@ class GameState() :
                 # then we should look at this piece
                 if (turn == 'w' and self.white_to_move) or (turn == 'b' and not self.white_to_move): 
                     piece = square[1]
-                    if piece == "p" :
-                        self.get_pawn_moves(r, c, moves)
-                    elif piece == "R" :
-                        self.get_rook_moves(r, c, moves)
+                    # call the appropriate move function based on piece type
+                    self.move_functions[piece](r, c, moves)
         
         return moves
 
@@ -71,12 +71,78 @@ class GameState() :
     Get all the pawn moves for the pawn located at row, col and add these moves to the list of valid moves
     '''
     def get_pawn_moves(self, r, c, moves) :
-        pass
-
+        if self.white_to_move : # then we will look at the white pawns
+            # 1 and 2 square advance
+            if self.board[r - 1][c] == "--" : 
+                moves.append(Move((r, c), (r - 1, c), self.board))
+                if r == 6 and self.board[r - 2][c] == "--":
+                    moves.append(Move((r, c), (r - 2, c), self.board))
+            # captures to the left
+            if c - 1 >= 0 :
+                if self.board[r - 1][c - 1][0] == "b" :
+                    moves.append(Move((r, c), (r - 1, c - 1), self.board))
+            # captures to the right
+            if c + 1 <= 7 :
+                if self.board[r - 1][c + 1][0] == "b" :
+                    moves.append(Move((r, c), (r - 1, c + 1), self.board))
+        else : # we look at black pawns
+            # 1 and 2 square advance
+            if self.board[r + 1][c] == "--" : 
+                moves.append(Move((r, c), (r + 1, c), self.board))
+                if r == 1 and self.board[r + 2][c] == "--":
+                    moves.append(Move((r, c), (r + 2, c), self.board))
+            # captures to the left
+            if c - 1 >= 0 :
+                if self.board[r + 1][c - 1][0] == "w" :
+                    moves.append(Move((r, c), (r + 1, c - 1), self.board))
+            # captures to the right
+            if c + 1 <= 7 :
+                if self.board[r + 1][c + 1][0] == "w" :
+                    moves.append(Move((r, c), (r + 1, c + 1), self.board))
     '''
     Get all the rook moves for the rook located at row, col and add these moves to the list of valid moves
     '''
     def get_rook_moves(self, r, c, moves) :
+        opposite_color = "b" if self.white_to_move else "w"
+        directions = ((-1, 0), (0, -1), (1, 0), (0, 1))
+        for d in directions :
+            for i in range(1, 8) :
+                end_row = r + d[0] * i
+                end_col = c + d[1] * i
+                if 0 <= end_row < 8 and 0 <= end_col < 8 :
+                    end_piece = self.board[end_row][end_col]
+                    if end_piece == "--" :
+                        moves.append(Move((r, c), (end_row, end_col), self.board))
+                    elif end_piece[0] == opposite_color :
+                        moves.append(Move((r, c), (end_row, end_col), self.board))
+                        break
+                    else :
+                        break
+                else :
+                    break
+
+    '''
+    Get all the knight moves for the knight located at row, col and add these moves to the list of valid moves
+    '''
+    def get_knight_moves(self, r, c, moves) :
+        pass
+
+    '''
+    Get all the bishop moves for the bishop located at row, col and add these moves to the list of valid moves
+    '''
+    def get_bishop_moves(self, r, c, moves) :
+        pass
+
+    '''
+    Get all the queen moves for the queen located at row, col and add these moves to the list of valid moves
+    '''
+    def get_queen_moves(self, r, c, moves) :
+        pass
+
+    '''
+    Get all the king moves for the king located at row, col and add these moves to the list of valid moves
+    '''
+    def get_king_moves(self, r, c, moves) :
         pass
 
 
