@@ -66,7 +66,6 @@ def main() :
     selected_sq = () # tuple : (row, col)
     player_clicks = [] # keep track of player clicks (two tuples : [(6, 4), (4, 4)])
 
-
     while running :
         for e in py.event.get() :
             if e.type == py.QUIT :
