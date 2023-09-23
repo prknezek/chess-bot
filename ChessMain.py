@@ -83,14 +83,14 @@ def main() :
                     player_clicks.append(selected_sq)
                 if len(player_clicks) == 2 :
                     move = ChessEngine.Move(player_clicks[0], player_clicks[1], gs.board)
-
-                    if move in valid_moves :
-                        print(move.get_chess_notation())
-                        gs.make_move(move)
-                        move_made = True
-                        selected_sq = ()
-                        player_clicks = []
-                    else : # instead of resetting clicks we change pieces
+                    for i in range(len(valid_moves)) :
+                        if move == valid_moves[i] :
+                            print(move.get_chess_notation())
+                            gs.make_move(valid_moves[i])
+                            move_made = True
+                            selected_sq = ()
+                            player_clicks = []
+                    if not move_made : # instead of resetting clicks we change pieces
                         player_clicks = [selected_sq]
             # key handling
             elif e.type == py.KEYDOWN :

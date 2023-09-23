@@ -43,6 +43,9 @@ class GameState() :
             self.white_king_loc = (move.end_row, move.end_col)
         if move.piece_moved == "bK" :
             self.black_king_loc = (move.end_row, move.end_col)
+        
+        if move.is_pawn_promotion :
+            self.board[move.end_row][move.end_col] = move.piece_moved[0] + 'Q'
 
     '''
     Undo the last move made
@@ -359,7 +362,12 @@ class Move() :
         self.piece_captured = board[self.end_row][self.end_col] # piece_captured can be "--" to represent nothing was captured
 
         self.move_id = self.start_row * 1000 + self.start_col * 100 + self.end_row * 10 + self.end_col
-    
+
+        self.is_pawn_promotion = False
+        if (self.piece_moved == "wp" and self.end_row == 0) or (self.piece_moved == "bp" and self.end_row == 7):
+            self.is_pawn_promotion = True
+        
+
     '''
     Overwriting the equals method
     '''
