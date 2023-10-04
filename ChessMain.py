@@ -21,10 +21,32 @@ def load_images() :
     # We can access an image by saying 'IMAGES['wp']'
 
 '''
+Highlight the square selected and moves for the piece selected
+'''
+def highlight_squares(screen, gs, valid_moves, selected_sq) :
+    if selected_sq != () :
+        r, c = selected_sq
+        # make sure the square selected is a piece that can be moved
+        if gs.board[r][c][0] == ('w' if gs.white_to_move else 'b') :
+            # highlight the selected square
+            s = py.Surface((SQ_SIZE, SQ_SIZE))
+            s.set_alpha(150) # transparency -> 0 transparent; 255 opaque
+            s.fill(py.Color(222, 222, 82))
+            screen.blit(s, (c*SQ_SIZE, r*SQ_SIZE))
+            # highlight moves from that square
+            s.set_alpha(100)
+            s.fill(py.Color(246,246,130))
+            for move in valid_moves :
+                if move.start_row == r and move.start_col == c :
+                    screen.blit(s, (move.end_col*SQ_SIZE, move.end_row*SQ_SIZE))
+
+
+'''
 Responsible for all the graphics within a current game state
 '''
-def draw_game_state(screen, gs) :
+def draw_game_state(screen, gs, valid_moves, selected_sq) :
     draw_board(screen) # draw the squares on the board
+    highlight_squares(screen, gs, valid_moves, selected_sq)
     draw_pieces(screen, gs.board) # draw the pieces on top of the squares
 
 '''
@@ -103,7 +125,7 @@ def main() :
             valid_moves = gs.get_valid_moves()
             move_made = False
 
-        draw_game_state(screen, gs)
+        draw_game_state(screen, gs, valid_moves, selected_sq)
         clock.tick(MAX_FPS)
         py.display.flip()
 
