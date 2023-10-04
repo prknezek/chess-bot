@@ -110,6 +110,7 @@ def main() :
     gs = ChessEngine.GameState()
     valid_moves = gs.get_valid_moves()
     move_made = False # flag variable for when a move is made
+    animate = False # flag variable for when we should animate a move
 
     load_images() # only do this once before the while loop
     running = True
@@ -138,6 +139,7 @@ def main() :
                             print(move.get_chess_notation())
                             gs.make_move(valid_moves[i])
                             move_made = True
+                            animate = True
                             selected_sq = ()
                             player_clicks = []
                     if not move_made : # instead of resetting clicks we change pieces
@@ -145,15 +147,17 @@ def main() :
             # key handling
             elif e.type == py.KEYDOWN :
                 if e.key == py.K_z : # undo move when z pressed
+                    animate = False
                     gs.undo_move()
                     move_made = True
 
         if move_made :
             if len(gs.move_log) > 0 :
-                if not gs.move_log[-1].is_castle_move :
+                if not gs.move_log[-1].is_castle_move and animate :
                     animate_move(gs.move_log[-1], screen, gs.board, clock)
             valid_moves = gs.get_valid_moves()
             move_made = False
+            animate = False
 
         draw_game_state(screen, gs, valid_moves, selected_sq)
         clock.tick(MAX_FPS)
