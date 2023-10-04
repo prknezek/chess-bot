@@ -78,8 +78,7 @@ def animate_move(move, screen, board, clock) :
     global colors
     dR = move.end_row - move.start_row
     dC = move.end_col - move.start_col
-    frames_per_square = 10 # frames to move one square
-    frame_count = frames_per_square
+    frame_count = 10 # frames to make a move
     for frame in range(frame_count + 1) :
         r, c = (move.start_row + dR * (frame / frame_count), 
                        move.start_col + dC * (frame / frame_count))
