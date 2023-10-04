@@ -23,15 +23,18 @@ def load_images() :
 '''
 Highlight the square selected and moves for the piece selected
 '''
-def highlight_squares(screen, gs, valid_moves, selected_sq) :
+def highlight_squares(screen, gs, valid_moves, selected_sq, move_log) :
+    s = py.Surface((SQ_SIZE, SQ_SIZE))
+    s.set_alpha(150) # transparency -> 0 transparent; 255 opaque
+    s.fill(py.Color(222, 222, 82))
+    # highlight where the last move was to
+    if len(move_log) > 0 :
+        screen.blit(s, (move_log[-1].end_col * SQ_SIZE, move_log[-1].end_row * SQ_SIZE))
     if selected_sq != () :
         r, c = selected_sq
         # make sure the square selected is a piece that can be moved
         if gs.board[r][c][0] == ('w' if gs.white_to_move else 'b') :
             # highlight the selected square
-            s = py.Surface((SQ_SIZE, SQ_SIZE))
-            s.set_alpha(150) # transparency -> 0 transparent; 255 opaque
-            s.fill(py.Color(222, 222, 82))
             screen.blit(s, (c*SQ_SIZE, r*SQ_SIZE))
             # highlight moves from that square
             s.set_alpha(100)
@@ -40,13 +43,12 @@ def highlight_squares(screen, gs, valid_moves, selected_sq) :
                 if move.start_row == r and move.start_col == c :
                     screen.blit(s, (move.end_col*SQ_SIZE, move.end_row*SQ_SIZE))
 
-
 '''
 Responsible for all the graphics within a current game state
 '''
 def draw_game_state(screen, gs, valid_moves, selected_sq) :
     draw_board(screen) # draw the squares on the board
-    highlight_squares(screen, gs, valid_moves, selected_sq)
+    highlight_squares(screen, gs, valid_moves, selected_sq, gs.move_log)
     draw_pieces(screen, gs.board) # draw the pieces on top of the squares
 
 '''
@@ -147,8 +149,9 @@ def main() :
                     move_made = True
 
         if move_made :
-            if not gs.move_log[-1].is_castle_move :
-                animate_move(gs.move_log[-1], screen, gs.board, clock)
+            if len(gs.move_log) > 0 :
+                if not gs.move_log[-1].is_castle_move :
+                    animate_move(gs.move_log[-1], screen, gs.board, clock)
             valid_moves = gs.get_valid_moves()
             move_made = False
 
