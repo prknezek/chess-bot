@@ -53,6 +53,7 @@ def draw_game_state(screen, gs, valid_moves, selected_sq) :
 Draw the squares on the board. The top left square is always light
 '''
 def draw_board(screen) :
+    global colors
     colors = [py.Color(238,238,210), py.Color(118,150,86)]
     for rank in range(DIMENSION) :
         for file in range(DIMENSION) :
@@ -69,6 +70,32 @@ def draw_pieces(screen, board) :
 
             if piece != "--" : # not an empty square
                 screen.blit(IMAGES[piece], py.Rect(file * SQ_SIZE, rank * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
+'''
+Animating a move
+'''
+def animate_move(move, screen, board, clock) :
+    global colors
+    dR = move.end_row - move.start_row
+    dC = move.end_col - move.start_col
+    frames_per_square = 10 # frames to move one square
+    frame_count = frames_per_square
+    for frame in range(frame_count + 1) :
+        r, c = (move.start_row + dR * (frame / frame_count), 
+                       move.start_col + dC * (frame / frame_count))
+        draw_board(screen)
+        draw_pieces(screen, board)
+        # erase the piece moved from its ending square
+        color = colors[(move.end_row + move.end_col) % 2]
+        end_square = py.Rect(move.end_col * SQ_SIZE, move.end_row * SQ_SIZE, SQ_SIZE, SQ_SIZE)
+        py.draw.rect(screen, color, end_square)
+        # draw captured piece back
+        if move.piece_captured != '--' :
+            screen.blit(IMAGES[move.piece_captured], end_square)
+        # draw the moving piece
+        screen.blit(IMAGES[move.piece_moved], py.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+        py.display.flip()
+        clock.tick(60)
 
 '''
 Main driver for our code. This will handle user input and updating the graphics
@@ -105,10 +132,9 @@ def main() :
                     player_clicks.append(selected_sq)
                 if len(player_clicks) == 2 :
                     move = ChessEngine.Move(player_clicks[0], player_clicks[1], gs.board)
-                    print(move.get_chess_notation())
-                    
                     for i in range(len(valid_moves)) :
                         if move == valid_moves[i] :
+                            print(move.get_chess_notation())
                             gs.make_move(valid_moves[i])
                             move_made = True
                             selected_sq = ()
@@ -122,6 +148,8 @@ def main() :
                     move_made = True
 
         if move_made :
+            if not gs.move_log[-1].is_castle_move :
+                animate_move(gs.move_log[-1], screen, gs.board, clock)
             valid_moves = gs.get_valid_moves()
             move_made = False
 
