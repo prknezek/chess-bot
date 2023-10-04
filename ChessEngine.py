@@ -457,8 +457,8 @@ class GameState() :
         # check for knight checks
         knight_moves = ((-1, 2), (-1, -2), (1, 2), (1, -2), (2, -1), (2, 1), (-2, -1), (-2, 1))
         for m in knight_moves :
-            end_row = start_row * m[0]
-            end_col = start_col * m[1]
+            end_row = start_row + m[0]
+            end_col = start_col + m[1]
             if 0 <= end_row < 8 and 0 <= end_col < 8 :
                 end_piece = self.board[end_row][end_col]
                 if end_piece[0] == enemy_color and end_piece[1] == 'N' : # enemy knight attack king
