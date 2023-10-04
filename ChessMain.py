@@ -83,9 +83,10 @@ def main() :
                     player_clicks.append(selected_sq)
                 if len(player_clicks) == 2 :
                     move = ChessEngine.Move(player_clicks[0], player_clicks[1], gs.board)
+                    print(move.get_chess_notation())
+                    
                     for i in range(len(valid_moves)) :
                         if move == valid_moves[i] :
-                            print(move.get_chess_notation())
                             gs.make_move(valid_moves[i])
                             move_made = True
                             selected_sq = ()

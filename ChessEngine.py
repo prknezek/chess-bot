@@ -101,7 +101,6 @@ class GameState() :
             # undo castling rights POTENTIAL ISSUE?
             if len(self.castle_rights_log) > 1 :
                 self.castle_rights_log.pop()
-            print(self.castle_rights_log[0].wks)
             self.current_castling_rights = self.castle_rights_log[-1]
             # undo castle move
             if move.is_castle_move :
@@ -144,10 +143,7 @@ class GameState() :
         temp_castling_rights = CastleRights(self.current_castling_rights.wks, self.current_castling_rights.bks,
                                             self.current_castling_rights.wqs, self.current_castling_rights.bqs)
         moves = []
-        if self.white_to_move :
-            self.get_castle_moves(self.white_king_loc[0], self.white_king_loc[1], moves)
-        else :
-            self.get_castle_moves(self.black_king_loc[0], self.black_king_loc[1], moves)
+        
         self.in_check, self.pins, self.checks = self.check_for_pins_and_checks()
         king_loc = self.white_king_loc if self.white_to_move else self.black_king_loc
         king_row = king_loc[0]
@@ -184,6 +180,11 @@ class GameState() :
         else :
             moves = self.get_all_possible_moves()
 
+        if self.white_to_move :
+            self.get_castle_moves(self.white_king_loc[0], self.white_king_loc[1], moves)
+        else :
+            self.get_castle_moves(self.black_king_loc[0], self.black_king_loc[1], moves)
+
         self.current_castling_rights = temp_castling_rights
         self.enpassant_possible = temp_enpassant_possible
         return moves
@@ -203,8 +204,7 @@ class GameState() :
                     piece = square[1]
                     # call the appropriate move function based on piece type
                     self.move_functions[piece](r, c, moves)
-        for move in moves :
-            print(move.get_chess_notation())
+        
         return moves
 
     '''
