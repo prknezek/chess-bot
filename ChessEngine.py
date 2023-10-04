@@ -384,7 +384,7 @@ class GameState() :
                 moves.append(Move((r, c), (r, c+2), self.board, is_castle_move=True))
 
     def get_queen_side_castle_moves(self, r, c, moves) :
-        if self.board[r][c-1] == '--'  and self.board[r][c-2] == '--' and self.board[r][c-3]:
+        if self.board[r][c-1] == '--'  and self.board[r][c-2] == '--' and self.board[r][c-3] == '--':
             if not self.square_under_attack(r, c-1) and not self.square_under_attack(r, c-2) :
                 moves.append(Move((r, c), (r, c-2), self.board, is_castle_move=True))
 
