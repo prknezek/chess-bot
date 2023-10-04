@@ -82,6 +82,7 @@ class GameState() :
     Undo the last move made
     '''
     def undo_move(self) :
+        self.check_mate = self.stale_mate = False
         if self.move_log :
             move = self.move_log.pop()
             self.board[move.start_row][move.start_col] = move.piece_moved
@@ -187,6 +188,13 @@ class GameState() :
 
         self.current_castling_rights = temp_castling_rights
         self.enpassant_possible = temp_enpassant_possible
+        # check for checkmate or stalemate
+        if len(moves) == 0 :
+            if self.in_check :
+                self.check_mate = True
+            else :
+                self.stale_mate = True
+
         return moves
 
     '''
