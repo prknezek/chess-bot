@@ -150,6 +150,12 @@ def main() :
                     animate = False
                     gs.undo_move()
                     move_made = True
+                if e.key == py.K_r : # reset the board when 'r' is pressed
+                    gs = ChessEngine.GameState()
+                    valid_moves = gs.get_valid_moves()
+                    selected_sq = ()
+                    player_clicks = []
+                    move_made = animate = False
 
         if move_made :
             if len(gs.move_log) > 0 :
