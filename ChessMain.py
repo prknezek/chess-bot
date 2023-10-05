@@ -174,6 +174,14 @@ def main() :
                     selected_sq = ()
                     player_clicks = []
                     move_made = animate = game_over = False
+                if e.key == py.K_p : # pause the game
+                    pause = True
+                    while pause :
+                        for e in py.event.get() :
+                            if e.type == py.KEYDOWN :
+                                if e.key == py.K_p :
+                                    pause = False
+                                    break
 
         # AI move finder
         if not game_over and not human_turn :
