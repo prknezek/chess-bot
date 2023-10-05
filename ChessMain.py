@@ -129,7 +129,7 @@ def main() :
     selected_sq = () # tuple : (row, col)
     player_clicks = [] # keep track of player clicks (two tuples : [(6, 4), (4, 4)])
     game_over = False
-    player_one = True # If a human is playing white, then this will be True. If an AI is playing, then false
+    player_one = False # If a human is playing white, then this will be True. If an AI is playing, then false
     player_two = False # Same as above but for black
 
     while running :
@@ -177,7 +177,9 @@ def main() :
 
         # AI move finder
         if not game_over and not human_turn :
-            AI_move = SmartMoveFinder.find_random_move(valid_moves)
+            AI_move = SmartMoveFinder.find_best_move(gs, valid_moves)
+            if AI_move == None :
+                AI_move = SmartMoveFinder.find_random_move(valid_moves)
             gs.make_move(AI_move)
             move_made = True
             animate = True
