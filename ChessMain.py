@@ -2,7 +2,7 @@
 This is our main driver file. Responsible for handling user input and displaying the current GameState object
 '''
 import pygame as py
-import ChessEngine
+import ChessEngine, SmartMoveFinder
 
 WIDTH = HEIGHT = 512 # 400 is another option
 DIMENSION = 8 # dimensions of a chess board are 8x8
@@ -129,14 +129,17 @@ def main() :
     selected_sq = () # tuple : (row, col)
     player_clicks = [] # keep track of player clicks (two tuples : [(6, 4), (4, 4)])
     game_over = False
+    player_one = True # If a human is playing white, then this will be True. If an AI is playing, then false
+    player_two = False # Same as above but for black
 
     while running :
+        human_turn = (gs.white_to_move and player_one) or (not gs.white_to_move and player_two)
         for e in py.event.get() :
             if e.type == py.QUIT :
                 running = False
             # mouse handling
             elif e.type == py.MOUSEBUTTONDOWN :
-                if not game_over : # can only play if the game isn't done (checkmate/stalemate)
+                if not game_over and human_turn : # can only play if the game isn't done (checkmate/stalemate)
                     location = py.mouse.get_pos() # (x,y) location of mouse
                     col = location[0] // SQ_SIZE
                     row = location[1] // SQ_SIZE
@@ -171,6 +174,13 @@ def main() :
                     selected_sq = ()
                     player_clicks = []
                     move_made = animate = game_over = False
+
+        # AI move finder
+        if not game_over and not human_turn :
+            AI_move = SmartMoveFinder.find_random_move(valid_moves)
+            gs.make_move(AI_move)
+            move_made = True
+            animate = True
 
         if move_made :
             if len(gs.move_log) > 0 :
