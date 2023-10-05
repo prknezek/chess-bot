@@ -163,14 +163,14 @@ class GameState() :
                 if piece_checking[1] == 'N' :
                     valid_squares = [(check_row, check_col)]
                 else :
-                    print(f"CHECK LOC: {check_row} {check_col}")
-                    print(f"CHECK DIR: {check[2]} {check[3]}")
+                    # print(f"CHECK LOC: {check_row} {check_col}")
+                    # print(f"CHECK DIR: {check[2]} {check[3]}")
                     for i in range(1, 8) :
                         valid_square = (king_row + check[2] * i, king_col + check[3] * i) # check[2] and check[3] are the check directions
                         valid_squares.append(valid_square)
                         if valid_square[0] == check_row and valid_square[1] == check_col :
                             break
-                    print(f"VALID SQUARES: {valid_squares}")
+                    # print(f"VALID SQUARES: {valid_squares}")
                 # get rid of any moves that dont block check or move king
                 for i in range(len(moves) - 1, -1, -1) :
                     if moves[i].piece_moved[1] != "K" : # move doesn't move king so it must block or capture

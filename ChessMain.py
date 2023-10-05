@@ -182,6 +182,10 @@ def main() :
                                 if e.key == py.K_p :
                                     pause = False
                                     break
+                            if e.type == py.QUIT :
+                                pause = False
+                                running = False
+                                break
 
         # AI move finder
         if not game_over and not human_turn :
