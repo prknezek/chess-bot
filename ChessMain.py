@@ -92,9 +92,13 @@ def animate_move(move, screen, board, clock) :
         py.draw.rect(screen, color, end_square)
         # draw captured piece back
         if move.piece_captured != '--' :
+            if move.is_enpassant_move :
+                enpassant_row = (move.end_row + 1) if move.piece_captured[0] == 'b' else (move.end_row - 1)
+                end_square = py.Rect(move.end_col * SQ_SIZE, enpassant_row * SQ_SIZE, SQ_SIZE, SQ_SIZE)
             screen.blit(IMAGES[move.piece_captured], end_square)
         # draw the moving piece
-        screen.blit(IMAGES[move.piece_moved], py.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+        if move.piece_moved != '--' :
+            screen.blit(IMAGES[move.piece_moved], py.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
         py.display.flip()
         clock.tick(60)
 
