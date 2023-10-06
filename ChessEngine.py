@@ -30,6 +30,7 @@ class GameState() :
         self.check_mate = False
         self.stale_mate = False
         self.enpassant_possible = () # coordinates for the square where an enpassant capture is possible
+        self.enpassant_possible_log = [self.enpassant_possible]
         self.current_castling_rights = CastleRights(True, True, True, True) # have any rules been broken (not if castling is possible)
         self.castle_rights_log = [CastleRights(self.current_castling_rights.wks, self.current_castling_rights.bks,
                                                self.current_castling_rights.wqs, self.current_castling_rights.bqs)]
@@ -77,6 +78,7 @@ class GameState() :
         self.castle_rights_log.append(CastleRights(self.current_castling_rights.wks, self.current_castling_rights.bks,
                                                self.current_castling_rights.wqs, self.current_castling_rights.bqs))
         
+        self.enpassant_possible_log.append(self.enpassant_possible)
 
     '''
     Undo the last move made
@@ -96,10 +98,11 @@ class GameState() :
             if move.is_enpassant_move :
                 self.board[move.end_row][move.end_col] = "--"
                 self.board[move.start_row][move.end_col] = move.piece_captured
-                self.enpassant_possible = (move.end_row, move.end_col)
-            if move.piece_moved[1] == 'p' and abs(move.start_row - move.end_row) == 2 :
-                self.enpassant_possible = ()
-            # undo castling rights POTENTIAL ISSUE?
+
+            if len(self.enpassant_possible_log) > 0 :
+                self.enpassant_possible_log.pop()
+            self.enpassant_possible = self.enpassant_possible_log[-1]
+
             if len(self.castle_rights_log) > 1 :
                 self.castle_rights_log.pop()
             self.current_castling_rights = self.castle_rights_log[-1]
@@ -111,7 +114,9 @@ class GameState() :
                 else : # queenside
                     self.board[move.end_row][move.end_col - 2] = self.board[move.end_row][move.end_col + 1]
                     self.board[move.end_row][move.end_col + 1] = '--'
-    
+
+
+
     '''
     Update the castle rights given the move
     '''
@@ -133,6 +138,19 @@ class GameState() :
                 if move.start_col == 0 : # left rook
                     self.current_castling_rights.bqs = False
                 elif move.start_col == 7 : # right rook
+                    self.current_castling_rights.bks = False
+        # if a rook is captured
+        if move.piece_captured == 'wR' :
+            if move.end_row == 7 :
+                if move.end_col == 0 :
+                    self.current_castling_rights.wqs = False
+                elif move.end_col == 7 :
+                    self.current_castling_rights.wks = False
+        elif move.piece_captured == 'bR' :
+            if move.end_row == 0 :
+                if move.end_col == 0 :
+                    self.current_castling_rights.bqs = False
+                elif move.end_col == 7 :
                     self.current_castling_rights.bks = False
 
     '''
