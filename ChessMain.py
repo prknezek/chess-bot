@@ -4,9 +4,11 @@ This is our main driver file. Responsible for handling user input and displaying
 import pygame as py
 import ChessEngine, SmartMoveFinder
 
-WIDTH = HEIGHT = 512 # 400 is another option
+BOARD_WIDTH = BOARD_HEIGHT = 512 # 400 is another option
+MOVE_LOG_PANEL_WIDTH = 200
+MOVE_LOG_PANEL_HEIGHT = BOARD_HEIGHT
 DIMENSION = 8 # dimensions of a chess board are 8x8
-SQ_SIZE = HEIGHT // DIMENSION
+SQ_SIZE = BOARD_HEIGHT // DIMENSION
 MAX_FPS = 15 # for animations
 IMAGES = {}
 
@@ -46,10 +48,11 @@ def highlight_squares(screen, gs, valid_moves, selected_sq, move_log) :
 '''
 Responsible for all the graphics within a current game state
 '''
-def draw_game_state(screen, gs, valid_moves, selected_sq) :
+def draw_game_state(screen, gs, valid_moves, selected_sq, move_log_font) :
     draw_board(screen) # draw the squares on the board
     highlight_squares(screen, gs, valid_moves, selected_sq, gs.move_log)
     draw_pieces(screen, gs.board) # draw the pieces on top of the squares
+    draw_move_log(screen, gs, move_log_font)
 
 '''
 Draw the squares on the board. The top left square is always light
@@ -72,6 +75,17 @@ def draw_pieces(screen, board) :
 
             if piece != "--" : # not an empty square
                 screen.blit(IMAGES[piece], py.Rect(file * SQ_SIZE, rank * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
+'''
+Draws the move log
+'''
+def draw_move_log(screen, gs, font) :
+    pass
+    #move_log_rect = py.Rect()
+    # text_object = font.render(text, 0, py.Color('White'))
+    # text_location = py.Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT).move(BOARD_WIDTH/2 - text_object.get_BOARD_WIDTH() / 2,
+    #                                                   BOARD_HEIGHT/2 - text_object.get_BOARD_HEIGHT() / 2)
+    # screen.blit(text_object, text_location)
 
 '''
 Animating a move
@@ -105,11 +119,11 @@ def animate_move(move, screen, board, clock) :
 '''
 Draws text for the end screen
 '''
-def draw_text(screen, text) :
+def draw_end_game_text(screen, text) :
     font = py.font.SysFont('monospace', 32, True, False)
     text_object = font.render(text, 0, py.Color('White'))
-    text_location = py.Rect(0, 0, WIDTH, HEIGHT).move(WIDTH/2 - text_object.get_width() / 2,
-                                                      HEIGHT/2 - text_object.get_height() / 2)
+    text_location = py.Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT).move(BOARD_WIDTH/2 - text_object.get_BOARD_WIDTH() / 2,
+                                                      BOARD_HEIGHT/2 - text_object.get_BOARD_HEIGHT() / 2)
     screen.blit(text_object, text_location)
     text_object = font.render(text, 0, py.Color('Black'))
     screen.blit(text_object, text_location.move(2, 2))
@@ -120,7 +134,7 @@ Main driver for our code. This will handle user input and updating the graphics
 
 def main() :
     py.init()
-    screen = py.display.set_mode((WIDTH, HEIGHT))
+    screen = py.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANEL_WIDTH, BOARD_HEIGHT))
     clock = py.time.Clock()
     screen.fill(py.Color('white'))
     gs = ChessEngine.GameState()
@@ -128,6 +142,7 @@ def main() :
     move_made = False # flag variable for when a move is made
     animate = False # flag variable for when we should animate a move
 
+    move_log_font = py.font.SysFont('monospace', 12, False, False)
     load_images() # only do this once before the while loop
     running = True
     selected_sq = () # tuple : (row, col)
@@ -147,7 +162,7 @@ def main() :
                     location = py.mouse.get_pos() # (x,y) location of mouse
                     col = location[0] // SQ_SIZE
                     row = location[1] // SQ_SIZE
-                    if selected_sq == (row, col) : # user clicked the same sq twice (undo)
+                    if selected_sq == (row, col) or col >= 8: # user clicked the same sq twice (undo)
                         selected_sq = () # unselect the square
                         player_clicks = [] # clear the clicks
                     else :
@@ -208,18 +223,15 @@ def main() :
             move_made = False
             animate = False
 
-        draw_game_state(screen, gs, valid_moves, selected_sq)
+        draw_game_state(screen, gs, valid_moves, selected_sq, move_log_font)
 
-        if gs.check_mate :
+        if gs.check_mate or gs.stale_mate:
             game_over = True
-            if gs.white_to_move :
-                draw_text(screen, "Black wins by checkmate")
+            if gs.stale_mate :
+                text = "Stalemate"
             else :
-                draw_text(screen, "White wins by checkmate")
-        elif gs.stale_mate :
-            game_over = True
-            draw_text(screen, "Stalemate")
-
+                text = "Black wins by checkmate" if gs.white_to_move else "White wins by checkmate"
+            draw_end_game_text(screen, text)
         clock.tick(MAX_FPS)
         py.display.flip()
 
