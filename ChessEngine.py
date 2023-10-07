@@ -539,7 +539,9 @@ class Move() :
     '''
     Returns a move made in chess notation (for debugging purposes)
     '''
-    def get_chess_notation(self) :
+    def __str__(self) :
+        if self.is_castle_move :
+            return "O-O" if self.end_col == 6 else "O-O-O"
         capture = ""
         if self.piece_captured != "--" :
             piece = self.piece_moved[1]
@@ -557,7 +559,7 @@ class Move() :
             return piece + self.get_rank_file(self.end_row, self.end_col)
     
     '''
-    Helper method for get_chess_notation()
+    Helper method for printing moves
     '''
     def get_rank_file(self, r, c) :
         return self.cols_to_files[c] + self.rows_to_ranks[r]

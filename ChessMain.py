@@ -5,7 +5,7 @@ import pygame as py
 import ChessEngine, SmartMoveFinder
 
 BOARD_WIDTH = BOARD_HEIGHT = 512 # 400 is another option
-MOVE_LOG_PANEL_WIDTH = 200
+MOVE_LOG_PANEL_WIDTH = 270
 MOVE_LOG_PANEL_HEIGHT = BOARD_HEIGHT
 DIMENSION = 8 # dimensions of a chess board are 8x8
 SQ_SIZE = BOARD_HEIGHT // DIMENSION
@@ -80,12 +80,28 @@ def draw_pieces(screen, board) :
 Draws the move log
 '''
 def draw_move_log(screen, gs, font) :
-    pass
-    #move_log_rect = py.Rect()
-    # text_object = font.render(text, 0, py.Color('White'))
-    # text_location = py.Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT).move(BOARD_WIDTH/2 - text_object.get_BOARD_WIDTH() / 2,
-    #                                                   BOARD_HEIGHT/2 - text_object.get_BOARD_HEIGHT() / 2)
-    # screen.blit(text_object, text_location)
+    move_log_rect = py.Rect(BOARD_WIDTH, 0, MOVE_LOG_PANEL_WIDTH, MOVE_LOG_PANEL_HEIGHT)
+    py.draw.rect(screen, py.Color("black"), move_log_rect)
+    move_log = gs.move_log
+    move_texts = [] # modify later
+    for i in range(0, len(move_log), 2) :
+        move_string = f"{i // 2 + 1}. {str(move_log[i])} "
+        if i + 1 < len(move_log) : # make sure black made a move
+            move_string += str(move_log[i+1])
+        move_texts.append(move_string)
+
+    moves_per_row = 3
+    padding = 5
+    text_y = padding
+    for i in range(0, len(move_texts), moves_per_row) :
+        text = ""
+        for j in range(moves_per_row) :
+            if i + j < len(move_texts) :
+                text += " " + move_texts[i+j]
+        text_object = font.render(text, 0, py.Color('White'))
+        text_location = move_log_rect.move(padding, text_y)
+        screen.blit(text_object, text_location)
+        text_y += text_object.get_height()
 
 '''
 Animating a move
@@ -172,7 +188,7 @@ def main() :
                         move = ChessEngine.Move(player_clicks[0], player_clicks[1], gs.board)
                         for i in range(len(valid_moves)) :
                             if move == valid_moves[i] :
-                                print(move.get_chess_notation())
+                                print(move)
                                 gs.make_move(valid_moves[i])
                                 move_made = True
                                 animate = True
