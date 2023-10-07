@@ -247,7 +247,7 @@ class GameState() :
                 break
 
         if self.white_to_move : # then we will look at the white pawns
-            # 1 and 2 square advance
+            king_row, king_col = self.white_king_loc
             if self.board[r - 1][c] == "--" : 
                 if not piece_pinned or pin_direction == (-1, 0) :
                     moves.append(Move((r, c), (r - 1, c), self.board))
@@ -260,7 +260,7 @@ class GameState() :
                         moves.append(Move((r, c), (r - 1, c - 1), self.board))
                 elif (r-1, c-1) == self.enpassant_possible :
                     if not piece_pinned or pin_direction == (-1, -1) :
-                        moves.append(Move((r, c), (r - 1, c - 1), self.board, is_enpassant_move=True))
+                        self.check_enpassant_possible(r, c, "w", moves, False)
             # captures to the right
             if c + 1 <= 7 :
                 if self.board[r - 1][c + 1][0] == "b" :
@@ -268,7 +268,7 @@ class GameState() :
                         moves.append(Move((r, c), (r - 1, c + 1), self.board))
                 elif (r-1, c+1) == self.enpassant_possible :
                     if not piece_pinned or pin_direction == (-1, 1) :
-                        moves.append(Move((r, c), (r - 1, c + 1), self.board, is_enpassant_move=True))
+                        self.check_enpassant_possible(r, c, "w", moves, True)
         else : # we look at black pawns
             # 1 and 2 square advance
             if self.board[r + 1][c] == "--" : 
@@ -283,7 +283,7 @@ class GameState() :
                         moves.append(Move((r, c), (r + 1, c - 1), self.board))
                 elif (r+1, c-1) == self.enpassant_possible :
                     if not piece_pinned or pin_direction == (1, -1) :
-                        moves.append(Move((r, c), (r + 1, c - 1), self.board, is_enpassant_move=True))
+                        self.check_enpassant_possible(r, c, "b", moves, False)
             # captures to the right
             if c + 1 <= 7 :
                 if self.board[r + 1][c + 1][0] == "w" :
@@ -291,7 +291,49 @@ class GameState() :
                         moves.append(Move((r, c), (r + 1, c + 1), self.board))
                 elif (r+1, c+1) == self.enpassant_possible :
                     if not piece_pinned or pin_direction == (1, 1) :
-                        moves.append(Move((r, c), (r + 1, c + 1), self.board, is_enpassant_move=True))
+                        self.check_enpassant_possible(r, c, "b", moves, True)
+    
+    '''
+    Helper function for determining if an enpassant move can be made
+    '''
+    def check_enpassant_possible(self, r, c, color, moves, is_right) :
+        king_row, king_col = self.black_king_loc if color == "b" else self.white_king_loc
+        attacking_piece = blocking_piece = False
+        offset = 1 if is_right else 0
+        if king_row == r :
+            if king_col < c :
+                inside_range = range(king_col + 1, c - 1 + offset)
+                outside_range = range(c + 1 + offset, 8)
+            else :
+                inside_range = range(king_col - 1, c + offset, -1)
+                outside_range = range(c-2 + offset, -1, -1)
+            print(inside_range)
+            for i in inside_range :
+                if self.board[r][i] != '--' : # some other piece besides enpassant pawns blocking
+                    blocking_piece = True
+                    print(f"INSIDE RANGE, FOUND BLOCKING PIECE : {self.board[r][i]}")
+            print(outside_range)
+            for i in outside_range :
+                square = self.board[r][i]
+                if square[0] == ("w" if color == "b" else "b") and (square[1] == "R" or square[1] == "Q") :
+                    print(f"FOUND ATTACKING PIECE : {self.board[r][i]}")
+                    attacking_piece = True
+                    break
+                elif square != "--" :
+                    print(f"FOUND BLOCKING PIECE : {self.board[r][i]}, {i}")
+                    blocking_piece = True
+        if not attacking_piece or blocking_piece :
+            if is_right : # c + 1
+                if color == "b" :
+                    moves.append(Move((r, c), (r + 1, c + 1), self.board, is_enpassant_move=True))
+                else :
+                    moves.append(Move((r, c), (r - 1, c + 1), self.board, is_enpassant_move=True))
+            else : # c - 1
+                if color == "b" :
+                    moves.append(Move((r, c), (r + 1, c - 1), self.board, is_enpassant_move=True))
+                else :
+                    moves.append(Move((r, c), (r - 1, c - 1), self.board, is_enpassant_move=True))
+    
     '''
     Get the moves for a directional piece (R, B, Q)
     '''
