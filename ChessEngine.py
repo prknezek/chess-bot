@@ -307,20 +307,15 @@ class GameState() :
             else :
                 inside_range = range(king_col - 1, c + offset, -1)
                 outside_range = range(c-2 + offset, -1, -1)
-            print(inside_range)
             for i in inside_range :
                 if self.board[r][i] != '--' : # some other piece besides enpassant pawns blocking
                     blocking_piece = True
-                    print(f"INSIDE RANGE, FOUND BLOCKING PIECE : {self.board[r][i]}")
-            print(outside_range)
             for i in outside_range :
                 square = self.board[r][i]
                 if square[0] == ("w" if color == "b" else "b") and (square[1] == "R" or square[1] == "Q") :
-                    print(f"FOUND ATTACKING PIECE : {self.board[r][i]}")
                     attacking_piece = True
                     break
                 elif square != "--" :
-                    print(f"FOUND BLOCKING PIECE : {self.board[r][i]}, {i}")
                     blocking_piece = True
         if not attacking_piece or blocking_piece :
             if is_right : # c + 1
