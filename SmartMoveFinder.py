@@ -132,7 +132,6 @@ def find_move_nega_max_alpha_beta(gs, valid_moves, depth, alpha, beta, turn_mult
             max_score = score
             if depth == DEPTH :
                 next_move = move
-                print(move, score)
         gs.undo_move()
 
         if max_score > alpha : # PRUNING
