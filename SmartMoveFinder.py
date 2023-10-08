@@ -1,6 +1,65 @@
 from random import randint, shuffle
 
 piece_score = {"K": 0, "Q": 9, "R": 5, "N": 3, "B": 3, "p": 1}
+
+knight_scores = [[1, 1, 1, 1, 1, 1, 1, 1],
+                 [1, 2, 2, 2, 2, 2, 2, 1],
+                 [1, 2, 3, 3, 3, 3, 2, 1],
+                 [1, 2, 3, 4, 4, 3, 2, 1],
+                 [1, 2, 3, 4, 4, 3, 2, 1],
+                 [1, 2, 3, 3, 3, 3, 2, 1],
+                 [1, 2, 2, 2, 2, 2, 2, 1],
+                 [1, 1, 1, 1, 1, 1, 1, 1]]
+
+bishop_scores = [[4, 3, 2, 1, 1, 2, 3, 4],
+                 [3, 4, 3, 2, 2, 3, 4, 3],
+                 [2, 3, 4, 3, 3, 4, 3, 2],
+                 [1, 2, 3, 4, 4, 3, 2, 1],
+                 [1, 2, 3, 4, 4, 3, 2, 1],
+                 [2, 3, 4, 3, 3, 4, 3, 2],
+                 [3, 4, 3, 2, 2, 3, 4, 3],
+                 [4, 3, 2, 1, 1, 2, 3, 4]]
+
+queen_scores = [[1, 1, 1, 3, 1, 1, 1, 1],
+                [1, 2, 3, 3, 3, 1, 1, 1],
+                [1, 4, 3, 3, 3, 4, 2, 1],
+                [1, 2, 3, 3, 3, 2, 2, 1],
+                [1, 2, 3, 3, 3, 2, 2, 1],
+                [1, 4, 3, 3, 3, 4, 2, 1],
+                [1, 1, 2, 3, 3, 1, 1, 1],
+                [1, 1, 1, 3, 1, 1, 1, 1]]
+
+rook_scores = [ [4, 3, 4, 4, 4, 4, 3, 4],
+                [4, 4, 4, 4, 4, 4, 4, 4],
+                [1, 1, 2, 3, 3, 2, 1, 1],
+                [1, 2, 3, 4, 4, 3, 2, 1],
+                [1, 2, 3, 4, 4, 3, 2, 1],
+                [1, 1, 2, 2, 2, 2, 1, 1],
+                [4, 4, 4, 4, 4, 4, 4, 4],
+                [4, 3, 4, 4, 4, 4, 3, 4]]
+
+white_pawn_scores =[[10, 10, 10, 10, 10, 10, 10, 10],
+                    [8, 8, 8, 8, 8, 8, 8, 8],
+                    [5, 6, 6, 7, 7, 6, 6, 5],
+                    [2, 3, 3, 5, 5, 3, 3, 2],
+                    [1, 2, 3, 4, 4, 3, 2, 1],
+                    [1, 1, 2, 3, 3, 2, 1, 1],
+                    [1, 1, 1, 0, 0, 1, 1, 1],
+                    [0, 0, 0, 0, 0, 0, 0, 0]]
+
+black_pawn_scores =[[0, 0, 0, 0, 0, 0, 0, 0],
+                    [1, 1, 1, 0, 0, 1, 1, 1],
+                    [1, 1, 2, 3, 3, 2, 1, 1],
+                    [1, 2, 3, 4, 4, 3, 2, 1],
+                    [2, 3, 3, 5, 5, 3, 3, 2],
+                    [5, 6, 6, 7, 7, 6, 6, 5],
+                    [8, 8, 8, 8, 8, 8, 8, 8],
+                    [10, 10, 10, 10, 10, 10, 10, 10]]
+    
+
+piece_position_scores = {"N" : knight_scores, "B" : bishop_scores, "R" : rook_scores,
+                         "Q" : queen_scores, "bp" : black_pawn_scores, "wp" : white_pawn_scores}
+
 CHECKMATE = 1000
 STALEMATE = 0
 DEPTH = 3
@@ -73,6 +132,7 @@ def find_move_nega_max_alpha_beta(gs, valid_moves, depth, alpha, beta, turn_mult
             max_score = score
             if depth == DEPTH :
                 next_move = move
+                print(move, score)
         gs.undo_move()
 
         if max_score > alpha : # PRUNING
@@ -94,11 +154,21 @@ def score_board(gs) :
         return STALEMATE
     
     score = 0
-    for row in gs.board :
-        for square in row :
-            if square[0] == 'w' :
-                score += piece_score[square[1]]
-            elif square[0] == 'b' :
-                score -= piece_score[square[1]]
-    
+    for row in range(len(gs.board)) :
+        for col in range(len(gs.board[row])) :
+            square = gs.board[row][col]
+            if square != '--' :
+                piece_position_score = 0
+                # score it positionally
+                if square[1] != "K" : # no position table for king
+                    if square[1] == 'p' : # for pawns
+                        piece_position_score = piece_position_scores[square][row][col]
+                    else : # for other pieces
+                        piece_position_score = piece_position_scores["N"][row][col]
+
+                if square[0] == 'w' :
+                    score += piece_score[square[1]] + piece_position_score * .1
+                elif square[0] == 'b' :
+                    score -= piece_score[square[1]] + piece_position_score * .1
+
     return score

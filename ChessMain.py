@@ -138,8 +138,8 @@ Draws text for the end screen
 def draw_end_game_text(screen, text) :
     font = py.font.SysFont('monospace', 32, True, False)
     text_object = font.render(text, 0, py.Color('White'))
-    text_location = py.Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT).move(BOARD_WIDTH/2 - text_object.get_BOARD_WIDTH() / 2,
-                                                      BOARD_HEIGHT/2 - text_object.get_BOARD_HEIGHT() / 2)
+    text_location = py.Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT).move(BOARD_WIDTH/2 - text_object.get_width() / 2,
+                                                      BOARD_HEIGHT/2 - text_object.get_height() / 2)
     screen.blit(text_object, text_location)
     text_object = font.render(text, 0, py.Color('Black'))
     screen.blit(text_object, text_location.move(2, 2))
@@ -165,7 +165,7 @@ def main() :
     player_clicks = [] # keep track of player clicks (two tuples : [(6, 4), (4, 4)])
     game_over = False
     player_one = True # If a human is playing white, then this will be True. If an AI is playing, then false
-    player_two = True # Same as above but for black
+    player_two = False # Same as above but for black
 
     while running :
         human_turn = (gs.white_to_move and player_one) or (not gs.white_to_move and player_two)
